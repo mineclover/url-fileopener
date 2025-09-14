@@ -21,7 +21,12 @@ const forceFlag = Options.boolean("force").pipe(
   Options.withDefault(false)
 )
 
-export const addHandler = ({ projectAlias, projectPath, force }: { projectAlias: string; projectPath?: string; force: boolean }) => Effect.gen(function* () {
+const hereFlag = Options.boolean("here").pipe(
+  Options.withDescription("Use current directory as project path"),
+  Options.withDefault(false)
+)
+
+export const addHandler = ({ projectAlias, projectPath, force, here }: { projectAlias: string; projectPath?: string; force: boolean; here: boolean }) => Effect.gen(function* () {
     const configManager = yield* ConfigManager
     const logger = yield* Logger
 
@@ -29,8 +34,20 @@ export const addHandler = ({ projectAlias, projectPath, force }: { projectAlias:
       // Validate project alias
       yield* validateProjectAlias(projectAlias)
 
-      // Use current directory if no path provided
-      const resolvedPath = resolve(projectPath || process.cwd())
+      // Validate conflicting options
+      if (here && projectPath) {
+        return createErrorResult("Cannot use both --here flag and project path argument. Use either --here or specify a path.")
+      }
+
+      // Determine the path to use
+      let targetPath: string
+      if (here) {
+        targetPath = process.cwd()
+      } else {
+        targetPath = projectPath || process.cwd()
+      }
+
+      const resolvedPath = resolve(targetPath)
 
       // Check if directory exists
       const pathValidation = yield* Effect.tryPromise(async () => {
@@ -54,7 +71,8 @@ export const addHandler = ({ projectAlias, projectPath, force }: { projectAlias:
       yield* logger.info(message, {
         projectAlias,
         projectPath: resolvedPath,
-        force
+        force,
+        here
       })
 
       return createSuccessResult(message, {
@@ -70,6 +88,7 @@ export const addHandler = ({ projectAlias, projectPath, force }: { projectAlias:
         projectAlias,
         projectPath: projectPath || process.cwd(),
         force,
+        here,
         error: error instanceof Error ? error.stack : String(error)
       })
 
@@ -82,7 +101,8 @@ const _AddCommand = Command.make(
   {
     projectAlias: projectAliasArg,
     projectPath: projectPathArg,
-    force: forceFlag
+    force: forceFlag,
+    here: hereFlag
   },
   addHandler
 ).pipe(

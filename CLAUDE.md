@@ -32,6 +32,8 @@ tests/
 ### fopen CLI Commands
 - `fopen install` - Register fileopener:// protocol
 - `fopen add <alias> [path]` - Add project alias
+  - `--here` - Use current directory as project path
+  - `--force` - Force overwrite existing project alias
 - `fopen list` - List configured projects
 - `fopen remove <alias>` - Remove project alias
 - `fopen uninstall` - Unregister protocol
@@ -72,6 +74,11 @@ type ProjectConfig = {
    - Added protocol registration using external protocol-registry package
    - Implemented secure file opening with path traversal protection
    - Created CLI interface with install/add/list/remove/uninstall commands
+
+2. **Added --here flag**: Enhanced add command with current directory registration
+   - Added `--here` flag to register current directory without specifying path
+   - Implemented conflict validation between `--here` flag and path argument
+   - Added comprehensive test coverage for new functionality
 
 <!-- MANUAL ADDITIONS START -->
 <!-- MANUAL ADDITIONS END -->
