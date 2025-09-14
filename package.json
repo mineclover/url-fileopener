@@ -1,10 +1,10 @@
 {
-  "name": "@template/cli",
-  "version": "0.0.0",
+  "name": "fopen",
+  "version": "1.0.0",
   "type": "module",
   "packageManager": "pnpm@10.14.0",
   "license": "MIT",
-  "description": "A basic Effect CLI application",
+  "description": "File opener CLI tool for managing fileopener:// protocol",
   "repository": {
     "type": "git",
     "url": "<PLACEHOLDER>"
@@ -13,9 +13,13 @@
     "access": "public",
     "directory": "dist"
   },
+  "bin": {
+    "fopen": "dist/cli.js",
+    "fopen-handler": "dist/bin/url-handler.js"
+  },
   "scripts": {
-    "dev": "tsx src/bin.ts",
-    "start": "node dist/bin.js",
+    "dev": "tsx src/cli.ts",
+    "start": "node dist/cli.js",
     "build": "tsup && pnpm copy-package-json",
     "build:ts": "tsup",
     "clean": "rimraf dist/*",
@@ -67,6 +71,7 @@
   },
   "dependencies": {
     "@effect/experimental": "^0.54.6",
+    "protocol-registry": "github:mineclover/protocol-registry",
     "tree-sitter": "^0.21.1",
     "tree-sitter-typescript": "^0.23.2"
   }
