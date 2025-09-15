@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "<PLACEHOLDER>"
+    "url": "https://github.com/mineclover/url-fileopener"
   },
   "publishConfig": {
     "access": "public",
