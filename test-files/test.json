@@ -1,0 +1,36 @@
+{
+  "name": "fileopener-test",
+  "version": "1.0.0",
+  "description": "Test JSON file for fileopener CLI",
+  "testCases": [
+    {
+      "fileType": "JavaScript",
+      "extension": ".js",
+      "expectedBehavior": "Opens in text editor",
+      "shouldExecute": false
+    },
+    {
+      "fileType": "Shell Script",
+      "extension": ".sh",
+      "expectedBehavior": "Opens in text editor (NOT executed)",
+      "shouldExecute": false
+    },
+    {
+      "fileType": "Markdown",
+      "extension": ".md",
+      "expectedBehavior": "Opens in text editor or markdown viewer",
+      "shouldExecute": false
+    },
+    {
+      "fileType": "JSON",
+      "extension": ".json",
+      "expectedBehavior": "Opens in text editor",
+      "shouldExecute": false
+    }
+  ],
+  "securityNotes": {
+    "executableFiles": "Should open for viewing, not execution",
+    "pathTraversal": "Blocked by security validation",
+    "absolutePaths": "Blocked by security validation"
+  }
+}

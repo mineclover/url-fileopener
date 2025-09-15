@@ -443,6 +443,67 @@ Uses `start` command to open files with default applications.
 ### Linux
 Uses `xdg-open` command to open files with default applications.
 
+## 📂 File Opening Behavior
+
+### How Files Are Opened
+
+The tool uses platform-specific commands to open files with their default applications:
+
+- **macOS**: `open /path/to/file` - Opens with the default application for that file type
+- **Windows**: `start "" "/path/to/file"` - Opens with the default application for that file type  
+- **Linux**: `xdg-open /path/to/file` - Opens with the default application for that file type
+
+### File Type Behavior
+
+**Note**: The actual behavior may vary depending on your system configuration and installed applications.
+
+#### Text Files (`.js`, `.ts`, `.md`, `.txt`, etc.)
+- **Expected**: Opens in your default text editor (VS Code, Sublime Text, etc.)
+- **Purpose**: Code review, documentation reading, configuration editing
+
+#### Executable Files (`.exe`, `.sh`, `.bat`, etc.)
+- **Expected**: Opens in a text editor or file manager (NOT executed)
+- **Security**: Files are opened for viewing, not execution
+- **Purpose**: Script review, configuration inspection
+
+#### Media Files (`.jpg`, `.mp4`, `.pdf`, etc.)
+- **Expected**: Opens in the default media viewer/player
+- **Purpose**: Content review, asset verification
+
+#### Archive Files (`.zip`, `.tar.gz`, etc.)
+- **Expected**: Opens in the default archive manager
+- **Purpose**: Archive inspection, file extraction
+
+### Security Considerations
+
+The tool is designed with security in mind:
+
+- **No Execution**: Executable files (`.exe`, `.sh`, `.bat`) are opened for viewing, not execution
+- **Path Validation**: All paths are validated to prevent directory traversal attacks
+- **Project Boundaries**: Files can only be accessed within configured project directories
+- **Safe Defaults**: Uses system default applications rather than custom execution logic
+
+### Troubleshooting File Opening
+
+If files don't open as expected:
+
+1. **Check Default Applications**: Verify your system's default applications for the file type
+2. **Test with Different Files**: Try opening various file types to isolate the issue
+3. **System Configuration**: Some systems may have different default behaviors
+4. **Manual Testing**: Test the platform commands directly:
+   ```bash
+   # macOS
+   open /path/to/your/file.js
+   
+   # Windows
+   start "" "C:\path\to\your\file.js"
+   
+   # Linux
+   xdg-open /path/to/your/file.js
+   ```
+
+**Important**: The exact behavior depends on your system configuration. The tool provides a safe, standard way to open files without executing potentially dangerous code.
+
 ## 🛠️ Development
 
 ### Project Structure
