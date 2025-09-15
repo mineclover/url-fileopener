@@ -44,7 +44,7 @@ async function install() {
 
   // Register protocol using protocol-registry
   try {
-    const protocolRegistry = require("protocol-registry")
+    const protocolRegistry = require("./protocol-registry")
     const handlerPath = path.join(__dirname, "bin", "fopen-handler-simple.cjs")
     const command = `node "${handlerPath}" "$_URL_"`
 
@@ -125,7 +125,7 @@ function remove(projectName) {
 function uninstall() {
   console.log("Uninstalling file opener protocol...")
   try {
-    const protocolRegistry = require("protocol-registry")
+    const protocolRegistry = require("./protocol-registry")
     protocolRegistry.remove("fileopener").then(() => {
       console.log("Protocol unregistered successfully")
     }).catch((_error) => {
