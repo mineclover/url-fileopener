@@ -163,8 +163,21 @@ function openFile(filePath) {
 
   child.on("spawn", () => {
     console.log(`File opened successfully: ${filePath}`)
+    // Unref to allow parent process to exit independently
     child.unref()
   })
+
+  // Ensure child process doesn't keep parent alive
+  child.on("exit", () => {
+    // Child process has exited, no action needed
+  })
+
+  // Set a timeout to force exit if child doesn't exit quickly
+  setTimeout(() => {
+    if (!child.killed) {
+      child.kill('SIGTERM')
+    }
+  }, 5000) // 5 second timeout
 }
 
 // Parse URL and open file
@@ -241,8 +254,14 @@ function handleUrl(url) {
 
     // Open the file
     openFile(fullPath)
+    
+    // Exit the process after opening the file
+    setTimeout(() => {
+      process.exit(0)
+    }, 100) // Small delay to ensure file opening message is displayed
   } catch (error) {
     console.log(`Failed to parse URL: ${error.message}`)
+    process.exit(1)
   }
 }
 
@@ -255,6 +274,11 @@ function openConfig() {
 
   console.log(`Opening config file: ${CONFIG_FILE}`)
   openFile(CONFIG_FILE)
+  
+  // Exit the process after opening the config file
+  setTimeout(() => {
+    process.exit(0)
+  }, 100)
 }
 
 // Main CLI logic
