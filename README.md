@@ -10,12 +10,17 @@ A powerful command-line interface for opening local files via custom URL scheme 
 - 🔗 **Custom URL Protocol**: Register `fileopener://` scheme with your operating system
 - 📁 **Project Aliases**: Map project names to local directory paths
 - 🖥️ **Cross-Platform**: Works on macOS, Windows, and Linux
-- 🔒 **Security**: Built-in path traversal protection
+- 🔒 **Enhanced Security**: Whitelist-based path validation with protection against:
+  - Path traversal attacks (`../`, `~/`)
+  - Absolute path access outside project directories
+  - Symbolic link escapes
+  - Directory traversal bypass attempts
 - 🔄 **Dual URL Formats**: Supports both modern and legacy URL formats
 - ⚙️ **Configuration Management**: Easy project setup and management
 - 🛡️ **Error Handling**: Comprehensive error messages and validation
 - 🎯 **Config URL Support**: Access configuration via `fileopener://config`
 - 🔧 **ES Module Support**: Built with modern JavaScript (ES modules)
+- 🧹 **Memory Leak Prevention**: Automatic process cleanup after file operations
 - 🌐 **Web Integration**: Compatible with [fileopener-redirect-worker](https://github.com/mineclover/fileopener-redirect-worker) for HTTP-to-protocol redirection
 
 ## 🚀 Quick Start
@@ -349,13 +354,34 @@ fileopener://myproject/my%20file%20with%20spaces.txt
 
 ## 🔒 Security Features
 
-### Path Traversal Protection
-The tool prevents access to files outside the configured project directories:
+### Enhanced Whitelist-Based Security
+The tool implements comprehensive security measures to prevent unauthorized file access:
 
+#### Path Traversal Protection
 ```bash
 # ❌ These will be blocked:
 fopen open "fileopener://myproject/../../../etc/passwd"
-fopen open "fileopener://myproject/../../sensitive-file.txt"
+fopen open "fileopener://myproject?path=../sensitive-file.txt"
+fopen open "fileopener://myproject?path=~/Documents/private.txt"
+```
+
+#### Absolute Path Protection
+```bash
+# ❌ These will be blocked:
+fopen open "fileopener://myproject?path=/etc/passwd"
+fopen open "fileopener://myproject?path=/Users/otheruser/private.txt"
+```
+
+#### Symbolic Link Protection
+The tool resolves symbolic links and ensures they don't escape the project directory boundaries.
+
+#### Security Violation Messages
+When security violations are detected, the tool provides clear error messages:
+```
+Security violation: Path traversal attempt detected
+Access denied: Security policy violation
+Attempted access to: ../etc/passwd
+Allowed project path: /path/to/project
 ```
 
 ### File Validation

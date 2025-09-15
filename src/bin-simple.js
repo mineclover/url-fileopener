@@ -180,6 +180,54 @@ function openFile(filePath) {
   }, 5000) // 5 second timeout
 }
 
+// Security validation functions
+function validateFilePath(filePath, projectPath) {
+  // Check for path traversal attempts
+  if (filePath.includes('..') || filePath.includes('~')) {
+    console.log("Security violation: Path traversal attempt detected")
+    return false
+  }
+
+  // Check for absolute paths (should be relative to project)
+  if (path.isAbsolute(filePath)) {
+    console.log("Security violation: Absolute path not allowed")
+    return false
+  }
+
+  // Normalize the path to prevent various bypass attempts
+  const normalizedPath = path.normalize(filePath)
+  
+  // Check for any remaining traversal attempts after normalization
+  if (normalizedPath.includes('..')) {
+    console.log("Security violation: Path traversal detected after normalization")
+    return false
+  }
+
+  // Resolve full file path
+  const fullPath = path.resolve(path.join(projectPath, normalizedPath))
+  const normalizedProjectPath = path.resolve(projectPath)
+
+  // Ensure the resolved path is within the project directory
+  if (!fullPath.startsWith(normalizedProjectPath)) {
+    console.log("Security violation: Path outside project directory")
+    return false
+  }
+
+  // Check for symbolic links that might escape the project directory
+  try {
+    const realPath = fs.realpathSync(fullPath)
+    if (!realPath.startsWith(normalizedProjectPath)) {
+      console.log("Security violation: Symbolic link escapes project directory")
+      return false
+    }
+  } catch (error) {
+    // If realpathSync fails, the file might not exist yet, but we'll check later
+    // This is not a security violation by itself
+  }
+
+  return true
+}
+
 // Parse URL and open file
 function handleUrl(url) {
   console.log(`Processing URL: ${url}`)
@@ -223,7 +271,7 @@ function handleUrl(url) {
 
     console.log(`Project: ${project}, File: ${filePath}`)
 
-    // Get project path from config
+    // Get project path from config (whitelist check)
     const config = getConfig()
     const projectPath = config.projects[project]
 
@@ -236,13 +284,21 @@ function handleUrl(url) {
       return
     }
 
-    // Resolve full file path
-    const fullPath = path.resolve(path.join(projectPath, filePath))
+    // Security validation: whitelist-based path checking
+    if (!validateFilePath(filePath, projectPath)) {
+      console.log("Access denied: Security policy violation")
+      console.log(`Attempted access to: ${filePath}`)
+      console.log(`Allowed project path: ${projectPath}`)
+      return
+    }
 
-    // Security check: ensure the resolved path is within the project directory
+    // Resolve full file path (after validation)
+    const fullPath = path.resolve(path.join(projectPath, path.normalize(filePath)))
+
+    // Final security check: ensure the resolved path is within the project directory
     const normalizedProjectPath = path.resolve(projectPath)
     if (!fullPath.startsWith(normalizedProjectPath)) {
-      console.log("Path traversal detected - access denied for security reasons")
+      console.log("Security violation: Final path validation failed")
       return
     }
 
