@@ -128,10 +128,10 @@ function uninstall() {
     const protocolRegistry = require("protocol-registry")
     protocolRegistry.remove("fileopener").then(() => {
       console.log("Protocol unregistered successfully")
-    }).catch((error) => {
-      console.error("Failed to unregister protocol:", error.message)
+    }).catch((_error) => {
+      console.error("Failed to unregister protocol:", _error.message)
     })
-  } catch (error) {
+  } catch (_error) {
     console.log("Protocol unregistered successfully (manual)")
   }
 }
@@ -220,14 +220,6 @@ function logInfo(message, details = {}) {
   }
 }
 
-function logWarning(message, details = {}) {
-  const timestamp = new Date().toISOString()
-  console.log(`[${timestamp}] WARNING: ${message}`)
-  
-  for (const [key, value] of Object.entries(details)) {
-    console.log(`[${timestamp}] ${key}: "${value}"`)
-  }
-}
 
 function logError(message, details = {}) {
   const timestamp = new Date().toISOString()
@@ -238,25 +230,7 @@ function logError(message, details = {}) {
   }
 }
 
-function logSecurityViolation(violationType, details) {
-  const timestamp = new Date().toISOString()
-  console.log(`[${timestamp}] SECURITY VIOLATION: ${violationType}`)
-  
-  for (const [key, value] of Object.entries(details)) {
-    console.log(`[${timestamp}] ${key}: "${value}"`)
-  }
-}
 
-function logSecurityAttempt(attemptType, filePath, projectPath, additionalInfo = {}) {
-  const timestamp = new Date().toISOString()
-  console.log(`[${timestamp}] SECURITY VIOLATION: ${attemptType}`)
-  console.log(`[${timestamp}] Attempted path: "${filePath}"`)
-  console.log(`[${timestamp}] Project path: "${projectPath}"`)
-  
-  for (const [key, value] of Object.entries(additionalInfo)) {
-    console.log(`[${timestamp}] ${key}: "${value}"`)
-  }
-}
 
 
 

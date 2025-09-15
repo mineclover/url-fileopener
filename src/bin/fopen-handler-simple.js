@@ -153,7 +153,7 @@ function handleUrl(url) {
     }
 
     // Check for Windows-style absolute paths (C:\, D:\, etc.)
-    if (/^[A-Za-z]:[\\\/]/.test(filePath)) {
+    if (/^[A-Za-z]:[\\/]/.test(filePath)) {
       log('SECURITY VIOLATION: Windows absolute path not allowed');
       log(`Attempted path: "${filePath}"`);
       log(`Project path: "${projectPath}"`);

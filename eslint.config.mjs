@@ -1,4 +1,3 @@
-import * as effectEslint from "@effect/eslint-plugin"
 import { fixupPluginRules } from "@eslint/compat"
 import { FlatCompat } from "@eslint/eslintrc"
 import js from "@eslint/js"
@@ -19,13 +18,13 @@ const compat = new FlatCompat({
 
 export default [
   {
-    ignores: ["**/dist", "**/build", "**/docs", "**/*.md"]
+    ignores: ["**/dist", "**/build", "**/docs", "**/*.md", "**/node_modules", "**/test-cli.cjs", "eslint.config.mjs", "scripts/**"]
   },
   ...compat.extends(
     "eslint:recommended"
   ),
-  ...effectEslint.configs.dprint,
   {
+    files: ["**/*.js", "**/*.mjs", "**/*.cjs"],
     plugins: {
       import: fixupPluginRules(_import),
       "sort-destructure-keys": sortDestructureKeys,
@@ -35,7 +34,24 @@ export default [
 
     languageOptions: {
       ecmaVersion: 2018,
-      sourceType: "module"
+      sourceType: "module",
+      globals: {
+        // Node.js globals
+        console: "readonly",
+        process: "readonly",
+        Buffer: "readonly",
+        __dirname: "readonly",
+        __filename: "readonly",
+        global: "readonly",
+        module: "readonly",
+        require: "readonly",
+        exports: "readonly",
+        setTimeout: "readonly",
+        clearTimeout: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
+        URL: "readonly"
+      }
     },
 
     rules: {
@@ -54,7 +70,8 @@ export default [
         }
       ],
 
-      "no-unused-vars": "off",
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
+      "no-console": "off",
       "prefer-rest-params": "off",
       "prefer-spread": "off",
       "import/first": "error",
@@ -66,20 +83,37 @@ export default [
       "sort-destructure-keys/sort-destructure-keys": "error",
       "deprecation/deprecation": "off",
 
-      "@effect/dprint": [
-        "error",
-        {
-          config: {
-            indentWidth: 2,
-            lineWidth: 120,
-            semiColons: "asi",
-            quoteStyle: "alwaysDouble",
-            trailingCommas: "never",
-            operatorPosition: "maintain",
-            "arrowFunction.useParentheses": "force"
-          }
-        }
-      ]
+      // Security-related rules
+      "no-eval": "error",
+      "no-implied-eval": "error",
+      "no-new-func": "error",
+      "no-script-url": "error",
+
+      // Code quality rules
+      "eqeqeq": ["error", "always"],
+      "no-var": "error",
+      "prefer-const": "error",
+      "no-duplicate-imports": "error"
+    }
+  },
+  {
+    files: ["test/**/*.js", "**/*.test.js"],
+    languageOptions: {
+      globals: {
+        // Vitest globals
+        describe: "readonly",
+        it: "readonly",
+        test: "readonly",
+        expect: "readonly",
+        beforeEach: "readonly",
+        afterEach: "readonly",
+        beforeAll: "readonly",
+        afterAll: "readonly",
+        vi: "readonly"
+      }
+    },
+    rules: {
+      "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }]
     }
   }
 ]

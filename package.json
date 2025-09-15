@@ -20,9 +20,22 @@
     "build": "mkdir -p dist/bin && cp src/bin-simple.js dist/bin-simple.cjs && cp src/bin/fopen-handler-simple.js dist/bin/fopen-handler-simple.cjs && node scripts/copy-package-json.js",
     "clean": "rimraf dist/*",
     "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint . --ext .js,.mjs,.cjs",
+    "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
     "copy-package-json": "node scripts/copy-package-json.js"
   },
   "devDependencies": {
+    "@eslint/compat": "^1.2.0",
+    "@eslint/eslintrc": "^3.0.0",
+    "@eslint/js": "^9.0.0",
+    "@vitest/coverage-v8": "3.2.4",
+    "eslint": "^9.0.0",
+    "eslint-plugin-codegen": "^0.33.0",
+    "eslint-plugin-import": "^2.29.0",
+    "eslint-plugin-simple-import-sort": "^12.0.0",
+    "eslint-plugin-sort-destructure-keys": "^1.5.0",
     "vitest": "^3.2.0"
   },
   "dependencies": {
