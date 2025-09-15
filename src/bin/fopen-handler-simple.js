@@ -9,12 +9,27 @@ const CONFIG_DIR = path.join(os.homedir(), '.fopen-cli');
 const CONFIG_FILE = path.join(CONFIG_DIR, 'config.json');
 const LOG_FILE = path.join(CONFIG_DIR, 'handler.log');
 
-// Logging function
+// Logging function with rotation
 function log(message) {
   const timestamp = new Date().toISOString();
   const logMessage = `[${timestamp}] ${message}\n`;
 
   try {
+    // Check if log file exists and its size
+    if (fs.existsSync(LOG_FILE)) {
+      const stats = fs.statSync(LOG_FILE);
+      const fileSizeInMB = stats.size / (1024 * 1024);
+      
+      // If log file is larger than 1MB, rotate it
+      if (fileSizeInMB > 1) {
+        const backupFile = LOG_FILE + '.old';
+        if (fs.existsSync(backupFile)) {
+          fs.unlinkSync(backupFile);
+        }
+        fs.renameSync(LOG_FILE, backupFile);
+      }
+    }
+    
     fs.appendFileSync(LOG_FILE, logMessage);
   } catch (error) {
     console.error('Failed to write to log file:', error.message);
@@ -120,13 +135,52 @@ function handleUrl(url) {
       return;
     }
 
-    // Resolve full file path
-    const fullPath = path.resolve(path.join(projectPath, filePath));
+    // Enhanced security validation
+    // Check for path traversal attempts
+    if (filePath.includes('..') || filePath.includes('~')) {
+      log('SECURITY VIOLATION: Path traversal attempt detected');
+      log(`Attempted path: "${filePath}"`);
+      log(`Project path: "${projectPath}"`);
+      return;
+    }
 
-    // Security check: ensure the resolved path is within the project directory
+    // Check for absolute paths (should be relative to project)
+    if (path.isAbsolute(filePath)) {
+      log('SECURITY VIOLATION: Absolute path not allowed');
+      log(`Attempted path: "${filePath}"`);
+      log(`Project path: "${projectPath}"`);
+      return;
+    }
+
+    // Check for Windows-style absolute paths (C:\, D:\, etc.)
+    if (/^[A-Za-z]:[\\\/]/.test(filePath)) {
+      log('SECURITY VIOLATION: Windows absolute path not allowed');
+      log(`Attempted path: "${filePath}"`);
+      log(`Project path: "${projectPath}"`);
+      return;
+    }
+
+    // Normalize the path to prevent various bypass attempts
+    const normalizedPath = path.normalize(filePath);
+    
+    // Check for any remaining traversal attempts after normalization
+    if (normalizedPath.includes('..')) {
+      log('SECURITY VIOLATION: Path traversal detected after normalization');
+      log(`Original path: "${filePath}"`);
+      log(`Normalized path: "${normalizedPath}"`);
+      log(`Project path: "${projectPath}"`);
+      return;
+    }
+
+    // Resolve full file path
+    const fullPath = path.resolve(path.join(projectPath, normalizedPath));
     const normalizedProjectPath = path.resolve(projectPath);
+
+    // Final security check: ensure the resolved path is within the project directory
     if (!fullPath.startsWith(normalizedProjectPath)) {
-      log('Path traversal detected - access denied for security reasons');
+      log('SECURITY VIOLATION: Path outside project directory');
+      log(`Resolved path: "${fullPath}"`);
+      log(`Project path: "${normalizedProjectPath}"`);
       return;
     }
 

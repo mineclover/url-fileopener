@@ -21,6 +21,7 @@ A powerful command-line interface for opening local files via custom URL scheme 
 - 🎯 **Config URL Support**: Access configuration via `fileopener://config`
 - 🔧 **ES Module Support**: Built with modern JavaScript (ES modules)
 - 🧹 **Memory Leak Prevention**: Automatic process cleanup after file operations
+- 📝 **Log Management**: Automatic log rotation and manual log cleanup
 - 🌐 **Web Integration**: Compatible with [fileopener-redirect-worker](https://github.com/mineclover/fileopener-redirect-worker) for HTTP-to-protocol redirection
 
 ## 🚀 Quick Start
@@ -281,6 +282,13 @@ Opens the configuration file in your default editor.
 fopen config
 ```
 
+### `fopen clean-logs`
+Cleans up log files to free disk space. Log files are automatically rotated when they exceed 1MB.
+
+```bash
+fopen clean-logs
+```
+
 ### `fopen uninstall`
 Unregisters the protocol from your system.
 
@@ -388,6 +396,34 @@ Allowed project path: /path/to/project
 - Checks if the target file exists before attempting to open
 - Validates project aliases exist in configuration
 - Ensures resolved paths remain within project boundaries
+
+## 📝 Log Management
+
+The tool automatically manages log files to prevent disk space issues:
+
+### Automatic Log Rotation
+- Log files are automatically rotated when they exceed 1MB
+- Old logs are backed up as `handler.log.old`
+- Maximum total log size is limited to 2MB (current + backup)
+
+### Manual Log Cleanup
+```bash
+# Clean all log files
+fopen clean-logs
+```
+
+### Log File Locations
+- **macOS/Linux**: `~/.fopen-cli/handler.log`
+- **Windows**: `%USERPROFILE%\.fopen-cli\handler.log`
+
+### Log Contents
+Logs include:
+- URL processing attempts
+- Security violations
+- File opening results
+- Error messages
+
+This ensures the tool doesn't consume excessive disk space while maintaining useful debugging information.
 
 ### Error Handling
 Comprehensive error messages for various scenarios:

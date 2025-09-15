@@ -39,7 +39,7 @@ function saveConfig(config) {
 
 // Commands
 async function install() {
-  console.log("Installing file opener protocol...")
+  logInfo("Installing file opener protocol...")
   ensureConfigDir()
 
   // Register protocol using protocol-registry
@@ -48,17 +48,24 @@ async function install() {
     const handlerPath = path.join(__dirname, "bin", "fopen-handler-simple.cjs")
     const command = `node "${handlerPath}" "$_URL_"`
 
-    console.log(`Registering protocol: "fileopener"`)
-    console.log(`With command: "${command}"`)
+    logInfo("Registering protocol", {
+      "Protocol": "fileopener",
+      "Command": command,
+      "Handler path": handlerPath
+    })
 
     await protocolRegistry.register("fileopener", command, {
       override: true,
       terminal: false
     })
-    console.log('\nProtocol registration successful!')
-    console.log("Configuration directory: " + CONFIG_DIR)
+    logInfo("Protocol registration successful", {
+      "Configuration directory": CONFIG_DIR
+    })
   } catch (error) {
-    console.error('\nError during protocol registration:', error)
+    logError("Error during protocol registration", {
+      "Error": error.message,
+      "Stack": error.stack
+    })
   }
 }
 
@@ -129,6 +136,29 @@ function uninstall() {
   }
 }
 
+function cleanLogs() {
+  const LOG_FILE = path.join(CONFIG_DIR, "handler.log")
+  const BACKUP_LOG_FILE = LOG_FILE + ".old"
+  
+  let cleaned = false
+  
+  if (fs.existsSync(LOG_FILE)) {
+    fs.unlinkSync(LOG_FILE)
+    console.log("Current log file removed")
+    cleaned = true
+  }
+  
+  if (fs.existsSync(BACKUP_LOG_FILE)) {
+    fs.unlinkSync(BACKUP_LOG_FILE)
+    console.log("Backup log file removed")
+    cleaned = true
+  }
+  
+  if (!cleaned) {
+    console.log("No log files found to clean")
+  }
+}
+
 // File opening functionality
 function openFile(filePath) {
   const platform = process.platform
@@ -180,146 +210,55 @@ function openFile(filePath) {
   }, 5000) // 5 second timeout
 }
 
-// Security validation functions
-function validateFilePath(filePath, projectPath) {
-  // Check for path traversal attempts
-  if (filePath.includes('..') || filePath.includes('~')) {
-    console.log("Security violation: Path traversal attempt detected")
-    return false
-  }
-
-  // Check for absolute paths (should be relative to project)
-  if (path.isAbsolute(filePath)) {
-    console.log("Security violation: Absolute path not allowed")
-    return false
-  }
-
-  // Normalize the path to prevent various bypass attempts
-  const normalizedPath = path.normalize(filePath)
+// Logging functions
+function logInfo(message, details = {}) {
+  const timestamp = new Date().toISOString()
+  console.log(`[${timestamp}] INFO: ${message}`)
   
-  // Check for any remaining traversal attempts after normalization
-  if (normalizedPath.includes('..')) {
-    console.log("Security violation: Path traversal detected after normalization")
-    return false
-  }
-
-  // Resolve full file path
-  const fullPath = path.resolve(path.join(projectPath, normalizedPath))
-  const normalizedProjectPath = path.resolve(projectPath)
-
-  // Ensure the resolved path is within the project directory
-  if (!fullPath.startsWith(normalizedProjectPath)) {
-    console.log("Security violation: Path outside project directory")
-    return false
-  }
-
-  // Check for symbolic links that might escape the project directory
-  try {
-    const realPath = fs.realpathSync(fullPath)
-    if (!realPath.startsWith(normalizedProjectPath)) {
-      console.log("Security violation: Symbolic link escapes project directory")
-      return false
-    }
-  } catch (error) {
-    // If realpathSync fails, the file might not exist yet, but we'll check later
-    // This is not a security violation by itself
-  }
-
-  return true
-}
-
-// Parse URL and open file
-function handleUrl(url) {
-  console.log(`Processing URL: ${url}`)
-
-  try {
-    const parsedUrl = new URL(url)
-
-    if (parsedUrl.protocol !== "fileopener:") {
-      console.log(`Invalid protocol: ${parsedUrl.protocol}. Expected 'fileopener:'`)
-      return
-    }
-
-    const project = parsedUrl.hostname
-    if (!project) {
-      console.log("Project name is required in URL")
-      return
-    }
-
-    // Handle special case for config
-    if (project === 'config' && !parsedUrl.pathname.replace(/^\/+/, '')) {
-      console.log(`Opening config file: ${CONFIG_FILE}`)
-      openFile(CONFIG_FILE)
-      return
-    }
-
-    let filePath
-    // Check for legacy query parameter format
-    const queryPath = parsedUrl.searchParams.get("path")
-    if (queryPath) {
-      // Legacy format: fileopener://project?path=file/path
-      filePath = decodeURIComponent(queryPath)
-    } else {
-      // Modern format: fileopener://project/file/path
-      filePath = parsedUrl.pathname.slice(1) // Remove leading slash
-      if (!filePath) {
-        console.log("File path is required in URL")
-        return
-      }
-      filePath = decodeURIComponent(filePath)
-    }
-
-    console.log(`Project: ${project}, File: ${filePath}`)
-
-    // Get project path from config (whitelist check)
-    const config = getConfig()
-    const projectPath = config.projects[project]
-
-    if (!projectPath) {
-      console.log(`Project '${project}' not found in configuration`)
-      console.log("Available projects:")
-      for (const [name, path] of Object.entries(config.projects)) {
-        console.log(`  ${name} -> ${path}`)
-      }
-      return
-    }
-
-    // Security validation: whitelist-based path checking
-    if (!validateFilePath(filePath, projectPath)) {
-      console.log("Access denied: Security policy violation")
-      console.log(`Attempted access to: ${filePath}`)
-      console.log(`Allowed project path: ${projectPath}`)
-      return
-    }
-
-    // Resolve full file path (after validation)
-    const fullPath = path.resolve(path.join(projectPath, path.normalize(filePath)))
-
-    // Final security check: ensure the resolved path is within the project directory
-    const normalizedProjectPath = path.resolve(projectPath)
-    if (!fullPath.startsWith(normalizedProjectPath)) {
-      console.log("Security violation: Final path validation failed")
-      return
-    }
-
-    // Check if file exists
-    if (!fs.existsSync(fullPath)) {
-      console.log(`File not found: ${fullPath}`)
-      return
-    }
-
-    // Open the file
-    openFile(fullPath)
-    
-    // Exit the process after opening the file
-    setTimeout(() => {
-      process.exit(0)
-    }, 100) // Small delay to ensure file opening message is displayed
-  } catch (error) {
-    console.log(`Failed to parse URL: ${error.message}`)
-    process.exit(1)
+  for (const [key, value] of Object.entries(details)) {
+    console.log(`[${timestamp}] ${key}: "${value}"`)
   }
 }
+
+function logWarning(message, details = {}) {
+  const timestamp = new Date().toISOString()
+  console.log(`[${timestamp}] WARNING: ${message}`)
+  
+  for (const [key, value] of Object.entries(details)) {
+    console.log(`[${timestamp}] ${key}: "${value}"`)
+  }
+}
+
+function logError(message, details = {}) {
+  const timestamp = new Date().toISOString()
+  console.log(`[${timestamp}] ERROR: ${message}`)
+  
+  for (const [key, value] of Object.entries(details)) {
+    console.log(`[${timestamp}] ${key}: "${value}"`)
+  }
+}
+
+function logSecurityViolation(violationType, details) {
+  const timestamp = new Date().toISOString()
+  console.log(`[${timestamp}] SECURITY VIOLATION: ${violationType}`)
+  
+  for (const [key, value] of Object.entries(details)) {
+    console.log(`[${timestamp}] ${key}: "${value}"`)
+  }
+}
+
+function logSecurityAttempt(attemptType, filePath, projectPath, additionalInfo = {}) {
+  const timestamp = new Date().toISOString()
+  console.log(`[${timestamp}] SECURITY VIOLATION: ${attemptType}`)
+  console.log(`[${timestamp}] Attempted path: "${filePath}"`)
+  console.log(`[${timestamp}] Project path: "${projectPath}"`)
+  
+  for (const [key, value] of Object.entries(additionalInfo)) {
+    console.log(`[${timestamp}] ${key}: "${value}"`)
+  }
+}
+
+
 
 // Open config file
 function openConfig() {
@@ -357,24 +296,19 @@ switch (command) {
   case "uninstall":
     uninstall()
     break
-  case "open":
-    if (!args[1]) {
-      console.log("Missing required URL")
-      console.log("Usage: fopen open <fileopener://url>")
-    } else {
-      handleUrl(args[1])
-    }
-    break
   case "config":
     openConfig()
     break
+  case "clean-logs":
+    cleanLogs()
+    break
   default:
     console.log("File opener CLI - Use one of the subcommands:")
-    console.log("  install   - Register the fileopener:// protocol")
-    console.log("  add       - Add a project alias")
-    console.log("  list      - List all configured projects")
-    console.log("  remove    - Remove a project alias")
-    console.log("  uninstall - Unregister the protocol")
-    console.log("  open      - Open a file using fileopener:// URL")
-    console.log("  config    - Open the configuration file")
+    console.log("  install     - Register the fileopener:// protocol")
+    console.log("  add         - Add a project alias")
+    console.log("  list        - List all configured projects")
+    console.log("  remove      - Remove a project alias")
+    console.log("  uninstall   - Unregister the protocol")
+    console.log("  config      - Open the configuration file")
+    console.log("  clean-logs  - Clean log files")
 }
