@@ -16,6 +16,7 @@ A powerful command-line interface for opening local files via custom URL scheme 
 - 🛡️ **Error Handling**: Comprehensive error messages and validation
 - 🎯 **Config URL Support**: Access configuration via `fileopener://config`
 - 🔧 **ES Module Support**: Built with modern JavaScript (ES modules)
+- 🌐 **Web Integration**: Compatible with [fileopener-redirect-worker](https://github.com/mineclover/fileopener-redirect-worker) for HTTP-to-protocol redirection
 
 ## 🚀 Quick Start
 
@@ -84,6 +85,54 @@ node dist/bin-simple.cjs config
 
 # 5. Open config via URL (alternative)
 node dist/bin-simple.cjs open "fileopener://config"
+```
+
+## 🌐 Web Integration
+
+### HTTP to Protocol Redirection
+
+This CLI tool is fully compatible with the [fileopener-redirect-worker](https://github.com/mineclover/fileopener-redirect-worker), a Cloudflare Worker that automatically redirects HTTP URLs to the `fileopener://` protocol.
+
+#### How it works:
+
+1. **HTTP URL**: `https://your-domain.com/fileopener/myProject/src/readme.md`
+2. **Automatic Redirect**: The worker redirects to `fileopener://myProject/src/readme.md`
+3. **File Opening**: Your local CLI tool opens the file in your default editor
+
+#### Setup with Cloudflare Worker:
+
+```bash
+# 1. Deploy the redirect worker to Cloudflare
+git clone https://github.com/mineclover/fileopener-redirect-worker
+cd fileopener-redirect-worker
+npm install
+npm run deploy
+
+# 2. Configure your domain in wrangler.toml
+[[routes]]
+pattern = "your-domain.com/fileopener/*"
+zone_name = "your-domain.com"
+
+# 3. Use HTTP URLs in your documentation, issues, or web pages
+# https://your-domain.com/fileopener/myProject/src/index.js
+```
+
+#### Benefits:
+
+- **Shareable Links**: Create HTTP links that work in browsers and automatically open files locally
+- **Documentation Integration**: Use in README files, GitHub issues, or web documentation
+- **Cross-Platform**: Works on any device with a browser, regardless of CLI installation
+- **Fallback Support**: HTML fallback with manual link for unsupported browsers
+
+#### Example Usage:
+
+```markdown
+<!-- In your README.md or documentation -->
+Check out the main configuration file: 
+[src/config.js](https://your-domain.com/fileopener/myProject/src/config.js)
+
+Or view the API documentation:
+[docs/api.md](https://your-domain.com/fileopener/myProject/docs/api.md)
 ```
 
 ## 📚 Commands Reference
