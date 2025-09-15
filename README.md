@@ -2,6 +2,9 @@
 
 A powerful command-line interface for opening local files via custom URL scheme (`fileopener://`). This tool enables developers to create clickable links that open specific files in their local editor directly from web pages, documentation, or shared links.
 
+[![npm version](https://badge.fury.io/js/fopen-cli.svg)](https://badge.fury.io/js/fopen-cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 ## ✨ Features
 
 - 🔗 **Custom URL Protocol**: Register `fileopener://` scheme with your operating system
@@ -17,6 +20,18 @@ A powerful command-line interface for opening local files via custom URL scheme 
 ## 🚀 Quick Start
 
 ### Installation
+
+#### Option 1: Install from npm (Recommended)
+
+```bash
+# Install globally from npm
+npm install -g fopen-cli
+
+# Register the protocol with your system
+fopen install
+```
+
+#### Option 2: Install from source
 
 ```bash
 # Clone the repository
@@ -35,6 +50,25 @@ node dist/bin-simple.cjs install
 
 ### Basic Usage
 
+#### For npm installation:
+```bash
+# 1. Add a project alias
+fopen add myproject /path/to/your/project
+
+# 2. Open files using URLs
+fopen open "fileopener://myproject/src/index.js"
+
+# 3. List configured projects
+fopen list
+
+# 4. Open configuration file
+fopen config
+
+# 5. Open config via URL (alternative)
+fopen open "fileopener://config"
+```
+
+#### For source installation:
 ```bash
 # 1. Add a project alias
 node dist/bin-simple.cjs add myproject /path/to/your/project
@@ -54,10 +88,14 @@ node dist/bin-simple.cjs open "fileopener://config"
 
 ## 📚 Commands Reference
 
-### `node dist/bin-simple.cjs install`
+### `fopen install` (npm) / `node dist/bin-simple.cjs install` (source)
 Registers the `fileopener://` protocol with your operating system and creates the configuration directory.
 
 ```bash
+# npm installation
+fopen install
+
+# source installation
 node dist/bin-simple.cjs install
 ```
 
@@ -71,10 +109,15 @@ Protocol registration successful!
 Configuration directory: ~/.fopen-cli
 ```
 
-### `node dist/bin-simple.cjs add <project> <path>`
+### `fopen add <project> <path>` (npm) / `node dist/bin-simple.cjs add <project> <path>` (source)
 Adds a new project alias mapping a name to a local directory path.
 
 ```bash
+# npm installation
+fopen add myproject /Users/username/projects/my-project
+fopen add docs /Users/username/documents
+
+# source installation
 node dist/bin-simple.cjs add myproject /Users/username/projects/my-project
 node dist/bin-simple.cjs add docs /Users/username/documents
 ```
