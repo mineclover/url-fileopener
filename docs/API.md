@@ -24,7 +24,7 @@ fopen install
 - Exit code 1 on failure
 
 **Side effects:**
-- Creates `~/.protocol-registry/` directory
+- Creates `~/.fopen-cli/` directory
 - Registers protocol handler with OS
 - Creates default configuration file
 
@@ -142,7 +142,7 @@ fopen config
 ```
 
 **Behavior:**
-- Opens `~/.protocol-registry/config.json`
+- Opens `~/.fopen-cli/config.json`
 - Uses system default editor for JSON files
 - Creates configuration file if it doesn't exist
 
@@ -169,28 +169,15 @@ fopen uninstall [--clean]
 
 The URL parser handles both modern and legacy formats:
 
-```typescript
-interface ParsedURL {
-  project: string;
-  filePath: string;
-  url: string;
-}
-```
+**URL Components:**
+- `project`: Project name from hostname
+- `filePath`: File path from pathname or query parameter
+- `url`: Original URL string
 
 ### Path Resolution
 
-Security-aware path resolution:
+Security-aware path resolution with the following checks:
 
-```typescript
-interface PathResolution {
-  projectPath: string;
-  filePath: string;
-  resolvedPath: string;
-  isValid: boolean;
-}
-```
-
-**Security checks:**
 1. Path traversal prevention (`../` sequences)
 2. Absolute path rejection
 3. Project boundary enforcement
@@ -200,19 +187,16 @@ interface PathResolution {
 
 ### Configuration Structure
 
-```typescript
-interface ProjectConfig {
-  projects: Record<string, string>;
-  version: string;
-  lastUpdated: string;
-}
-```
+The configuration file contains:
+- `projects`: Object mapping project names to directory paths
+- `version`: Configuration format version
+- `lastUpdated`: ISO timestamp of last modification
 
 ### File Location
 
-- **Config Directory**: `~/.protocol-registry/`
-- **Config File**: `~/.protocol-registry/config.json`
-- **Log File**: `~/.protocol-registry/log.txt` (when logging enabled)
+- **Config Directory**: `~/.fopen-cli/`
+- **Config File**: `~/.fopen-cli/config.json`
+- **Log File**: `~/.fopen-cli/handler.log` (when logging enabled)
 
 ### Example Configuration
 
@@ -276,12 +260,12 @@ Informational messages are printed without prefix.
 
 ## Logging
 
-When logging is enabled, operations are logged to `~/.protocol-registry/log.txt`:
+When logging is enabled, operations are logged to `~/.fopen-cli/handler.log`:
 
 ```
-[2025-09-15T03:50:44.475Z] INFO [add-command] Project 'myproject' added successfully
-[2025-09-15T03:50:44.476Z] INFO [open-command] File opened successfully: /path/to/file.txt
-[2025-09-15T03:50:44.477Z] ERROR [open-command] File not found: /path/to/missing.txt
+[2025-09-15T03:50:44.475Z] Project 'myproject' added successfully
+[2025-09-15T03:50:44.476Z] File opened successfully: /path/to/file.txt
+[2025-09-15T03:50:44.477Z] File not found: /path/to/missing.txt
 ```
 
 ## Security Considerations

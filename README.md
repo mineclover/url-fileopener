@@ -64,7 +64,7 @@ fopen install
 Installing file opener protocol...
 Configuration directory created
 Protocol registered successfully
-Configuration directory: ~/.protocol-registry
+Configuration directory: ~/.fopen-cli
 ```
 
 ### `fopen add <project> <path>`
@@ -180,9 +180,9 @@ fileopener://myproject/my%20file%20with%20spaces.txt
 
 ### Configuration Directory
 ```
-~/.protocol-registry/
+~/.fopen-cli/
 ├── config.json          # Project aliases configuration
-└── log.txt              # Operation logs (when available)
+└── handler.log          # Operation logs (when available)
 ```
 
 ### Configuration File Format
@@ -237,35 +237,21 @@ Uses `xdg-open` command to open files with default applications.
 ### Project Structure
 ```
 src/
-├── models/              # Data models (Effect Schema)
-│   ├── ProjectConfig.ts
-│   ├── FileOpenRequest.ts
-│   ├── CommandResult.ts
-│   └── LogEntry.ts
-├── services/            # Business logic services
-│   ├── protocol-handler/    # Protocol registration
-│   ├── config-manager/      # Configuration management
-│   ├── file-opener/         # URL parsing & file operations
-│   └── logging/             # Structured logging
-├── cli/                 # CLI command implementations
-│   ├── commands/
-│   └── index.ts
-└── bin/                 # Executable binaries
-    ├── fopen-handler.ts # URL handler binary
-    └── bin.ts           # Main CLI entry point
+├── bin-simple.js           # Main CLI entry point
+└── bin/
+    └── fopen-handler-simple.js  # URL handler binary
 
 tests/
-├── contract/            # Contract tests (TDD)
-├── integration/         # Integration tests
-└── unit/               # Unit tests
+├── contract/               # Contract tests (TDD)
+└── integration/            # Integration tests
 ```
 
 ### Technology Stack
-- **Framework**: Effect CLI with TypeScript
+- **Framework**: Pure Node.js (no external frameworks)
 - **Protocol Registration**: protocol-registry package
 - **Configuration**: JSON files with atomic operations
 - **Testing**: Vitest with comprehensive test coverage
-- **Build**: tsup for TypeScript compilation
+- **Build**: tsup for JavaScript bundling
 
 ### Building from Source
 ```bash
@@ -278,20 +264,14 @@ pnpm test
 # Build the project
 pnpm build
 
-# Run linting
-pnpm lint
-
-# Type checking
-pnpm check
+# Clean build artifacts
+pnpm clean
 ```
 
 ### Testing
 ```bash
 # Run all tests
 pnpm test
-
-# Run with coverage
-pnpm coverage
 
 # Run specific test suites
 pnpm test tests/contract/
@@ -342,7 +322,7 @@ fopen install
 2. Ensure user has read access to project files
 3. Verify configuration directory permissions:
    ```bash
-   ls -la ~/.protocol-registry/
+   ls -la ~/.fopen-cli/
    ```
 
 ### Debug Mode
@@ -409,8 +389,8 @@ Integrate with development tools, IDEs, or documentation systems to provide dire
 - Follow Test-Driven Development (TDD)
 - Write tests before implementation
 - Maintain high test coverage
-- Use TypeScript for type safety
-- Follow Effect framework patterns
+- Use vanilla JavaScript for simplicity
+- Keep code simple and readable
 - Include comprehensive error handling
 
 ## 📄 License
@@ -419,10 +399,10 @@ MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🔗 Related Links
 
-- [Effect CLI Documentation](https://effect.website/docs/cli)
 - [Protocol Registry Package](https://github.com/mineclover/protocol-registry)
-- [TypeScript Documentation](https://www.typescriptlang.org/docs/)
+- [Node.js Documentation](https://nodejs.org/docs/)
+- [Vitest Testing Framework](https://vitest.dev/)
 
 ---
 
-**Created with ❤️ using Effect CLI framework and TypeScript**
+**Created with ❤️ using pure Node.js**
