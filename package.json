@@ -1,10 +1,14 @@
 {
-  "name": "@template/cli",
-  "version": "0.0.0",
+  "name": "fopen-cli",
+  "version": "1.0.0",
   "type": "module",
   "packageManager": "pnpm@10.14.0",
   "license": "MIT",
-  "description": "A basic Effect CLI application",
+  "description": "CLI tool for opening files via custom URL scheme",
+  "bin": {
+    "fopen": "./dist/bin.cjs",
+    "fopen-handler": "./dist/bin/fopen-handler.cjs"
+  },
   "repository": {
     "type": "git",
     "url": "<PLACEHOLDER>"
@@ -58,5 +62,8 @@
     "patchedDependencies": {
       "@changesets/get-github-info@0.6.0": "patches/@changesets__get-github-info@0.6.0.patch"
     }
+  },
+  "dependencies": {
+    "protocol-registry": "github:mineclover/protocol-registry"
   }
 }
