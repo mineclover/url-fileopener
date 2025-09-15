@@ -63,21 +63,24 @@ async function install() {
 }
 
 function add(projectName, projectPath) {
-  if (!projectName || !projectPath) {
-    console.log("Missing required arguments")
-    console.log("Usage: fopen add <project> <path>")
+  if (!projectName) {
+    console.log("Missing required project name")
+    console.log("Usage: fopen add <project> [path]")
     return
   }
 
-  if (!fs.existsSync(projectPath)) {
-    console.log("Path does not exist")
+  const absolutePath = projectPath ? path.resolve(projectPath) : process.cwd()
+
+  if (!fs.existsSync(absolutePath)) {
+    console.log(`Path does not exist: ${absolutePath}`)
     return
   }
 
   const config = getConfig()
-  config.projects[projectName] = path.resolve(projectPath)
+  config.projects[projectName] = absolutePath
   saveConfig(config)
   console.log(`Project '${projectName}' added successfully`)
+  console.log(`  -> ${absolutePath}`)
 }
 
 function list() {

@@ -135,6 +135,32 @@ Or view the API documentation:
 [docs/api.md](https://your-domain.com/fileopener/myProject/docs/api.md)
 ```
 
+#### Live Demo - Current Project:
+
+This very README file can be opened using the fileopener protocol! Here's how to set it up:
+
+```bash
+# 1. Register the current project (path is optional - uses current directory)
+fopen add url-fileopener
+
+# 2. Open this README file directly
+fopen open "fileopener://url-fileopener/README.md"
+
+# 3. Or use the web redirect URL (if you have the worker deployed)
+# https://your-domain.com/fileopener/url-fileopener/README.md
+```
+
+**Try it yourself:**
+- **Direct Protocol**: `fileopener://url-fileopener/README.md` ✅ (Tested and working!)
+- **Web Redirect**: `https://your-domain.com/fileopener/url-fileopener/README.md`
+
+**More examples from this project:**
+- [Source code](fileopener://url-fileopener/src/bin-simple.js) - Main CLI implementation
+- [Package config](fileopener://url-fileopener/package.json) - Project configuration
+- [Build script](fileopener://url-fileopener/scripts/copy-package-json.js) - Build automation
+
+This demonstrates how you can create clickable links in documentation that automatically open the corresponding files in your local editor!
+
 ## 📚 Commands Reference
 
 ### `fopen install` (npm) / `node dist/bin-simple.cjs install` (source)
@@ -158,17 +184,19 @@ Protocol registration successful!
 Configuration directory: ~/.fopen-cli
 ```
 
-### `fopen add <project> <path>` (npm) / `node dist/bin-simple.cjs add <project> <path>` (source)
+### `fopen add <project> [path]` (npm) / `node dist/bin-simple.cjs add <project> [path]` (source)
 Adds a new project alias mapping a name to a local directory path.
 
 ```bash
 # npm installation
 fopen add myproject /Users/username/projects/my-project
 fopen add docs /Users/username/documents
+fopen add current-project  # Uses current directory
 
 # source installation
 node dist/bin-simple.cjs add myproject /Users/username/projects/my-project
 node dist/bin-simple.cjs add docs /Users/username/documents
+node dist/bin-simple.cjs add current-project  # Uses current directory
 ```
 
 **Validation:**
