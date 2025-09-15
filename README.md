@@ -153,6 +153,7 @@ fopen open "fileopener://url-fileopener/README.md"
 **Try it yourself:**
 - **Direct Protocol**: `fileopener://url-fileopener/README.md` ✅ (Tested and working!)
 - **Web Redirect**: `https://your-domain.com/fileopener/url-fileopener/README.md`
+- **npm Package**: `@context-action/fopen-cli@1.0.4` ✅ (Tested and working!)
 
 **More examples from this project:**
 - [Source code](fileopener://url-fileopener/src/bin-simple.js) - Main CLI implementation
@@ -160,6 +161,30 @@ fopen open "fileopener://url-fileopener/README.md"
 - [Build script](fileopener://url-fileopener/scripts/copy-package-json.js) - Build automation
 
 This demonstrates how you can create clickable links in documentation that automatically open the corresponding files in your local editor!
+
+#### npm Package Test Results:
+
+The npm package has been thoroughly tested and verified to work correctly:
+
+```bash
+# ✅ Tested: npm package installation and registration
+npx @context-action/fopen-cli@1.0.4 install
+# → Protocol registered with correct handler path
+
+# ✅ Tested: project registration with path omission
+npx @context-action/fopen-cli@1.0.4 add url-fileopener
+# → Uses current directory automatically
+
+# ✅ Tested: file opening with memory leak prevention
+npx @context-action/fopen-cli@1.0.4 open "fileopener://url-fileopener/README.md"
+# → File opens and process exits cleanly
+```
+
+**Key improvements in v1.0.4:**
+- ✅ Fixed bin path configuration for npm package
+- ✅ Added memory leak prevention with explicit process exit
+- ✅ Improved child process management with timeout
+- ✅ Enhanced error handling and validation
 
 ## 📚 Commands Reference
 

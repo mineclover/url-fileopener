@@ -14,13 +14,22 @@ async function copyPackageJson() {
     const jsonContent = await fs.readFile(packageJsonPath, "utf8");
     const json = JSON.parse(jsonContent);
 
+    // Fix bin paths for dist directory
+    const fixedBin = {}
+    if (json.bin) {
+      for (const [key, value] of Object.entries(json.bin)) {
+        // Remove 'dist/' prefix from bin paths since we're already in dist
+        fixedBin[key] = value.replace(/^dist\//, '')
+      }
+    }
+
     const pkg = {
       name: json.name,
       version: json.version,
       type: json.type,
       description: json.description,
       main: "bin-simple.cjs",
-      bin: json.bin,
+      bin: fixedBin,
       engines: json.engines,
       dependencies: json.dependencies,
       peerDependencies: json.peerDependencies,
