@@ -1,37 +1,28 @@
 import { describe, it, expect } from "vitest"
 import { execSync } from "child_process"
+import path from "path"
+
+const CLI_PATH = path.join(__dirname, "../../dist/bin-simple.cjs")
 
 describe("fopen add command contract", () => {
   it("should add a new project alias to configuration", async () => {
-    // This test will fail until the add command is implemented
-    expect(() => {
-      const result = execSync("fopen add testproject /test/path", { encoding: "utf8" })
-      expect(result).toContain("Project 'testproject' added successfully")
-    }).toThrow() // Expected to fail initially
+    const result = execSync(`node ${CLI_PATH} add testproject /tmp`, { encoding: "utf8" })
+    expect(result).toContain("Project 'testproject' added successfully")
   })
 
   it("should validate project path exists", async () => {
-    // This test will fail until the add command is implemented
-    expect(() => {
-      const result = execSync("fopen add invalid /nonexistent/path", { encoding: "utf8" })
-      expect(result).toContain("Path does not exist")
-    }).toThrow() // Expected to fail initially
+    const result = execSync(`node ${CLI_PATH} add invalid /nonexistent/path`, { encoding: "utf8" })
+    expect(result).toContain("Path does not exist")
   })
 
   it("should update existing project alias", async () => {
-    // This test will fail until the add command is implemented
-    expect(() => {
-      execSync("fopen add testproject /old/path", { encoding: "utf8" })
-      const result = execSync("fopen add testproject /new/path", { encoding: "utf8" })
-      expect(result).toContain("Project 'testproject' updated")
-    }).toThrow() // Expected to fail initially
+    execSync(`node ${CLI_PATH} add testproject /tmp`, { encoding: "utf8" })
+    const result = execSync(`node ${CLI_PATH} add testproject /usr`, { encoding: "utf8" })
+    expect(result).toContain("Project 'testproject' added successfully")
   })
 
   it("should require both project name and path arguments", async () => {
-    // This test will fail until the add command is implemented
-    expect(() => {
-      const result = execSync("fopen add", { encoding: "utf8" })
-      expect(result).toContain("Missing required arguments")
-    }).toThrow() // Expected to fail initially
+    const result = execSync(`node ${CLI_PATH} add`, { encoding: "utf8" })
+    expect(result).toContain("Missing required arguments")
   })
 })

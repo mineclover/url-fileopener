@@ -6,8 +6,8 @@
   "license": "MIT",
   "description": "CLI tool for opening files via custom URL scheme",
   "bin": {
-    "fopen": "./dist/bin.cjs",
-    "fopen-handler": "./dist/bin/fopen-handler.cjs"
+    "fopen": "./dist/bin-simple.cjs",
+    "fopen-handler": "./dist/bin/fopen-handler-simple.cjs"
   },
   "repository": {
     "type": "git",
