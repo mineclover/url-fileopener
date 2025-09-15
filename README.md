@@ -2,7 +2,7 @@
 
 A powerful command-line interface for opening local files via custom URL scheme (`fileopener://`). This tool enables developers to create clickable links that open specific files in their local editor directly from web pages, documentation, or shared links.
 
-[![npm version](https://badge.fury.io/js/fopen-cli.svg)](https://badge.fury.io/js/fopen-cli)
+[![npm version](https://badge.fury.io/js/@context-action%2Ffopen-cli.svg)](https://badge.fury.io/js/@context-action%2Ffopen-cli)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 ## ✨ Features
@@ -25,7 +25,7 @@ A powerful command-line interface for opening local files via custom URL scheme 
 
 ```bash
 # Install globally from npm
-npm install -g fopen-cli
+npm install -g @context-action/fopen-cli
 
 # Register the protocol with your system
 fopen install

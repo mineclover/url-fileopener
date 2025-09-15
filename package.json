@@ -1,5 +1,5 @@
 {
-  "name": "fopen-cli",
+  "name": "@context-action/fopen-cli",
   "version": "1.0.0",
   "packageManager": "pnpm@10.14.0",
   "type": "module",
