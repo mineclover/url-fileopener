@@ -17,14 +17,12 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "tsup && pnpm copy-package-json",
+    "build": "pnpm copy-package-json",
     "clean": "rimraf dist/*",
     "test": "vitest run",
-    "copy-package-json": "tsx scripts/copy-package-json.ts"
+    "copy-package-json": "node scripts/copy-package-json.js"
   },
   "devDependencies": {
-    "tsup": "^8.2.4",
-    "tsx": "^4.19.1",
     "vitest": "^3.2.0"
   },
   "dependencies": {
