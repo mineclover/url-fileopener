@@ -19,7 +19,12 @@ async function copyPackageJson() {
     if (json.bin) {
       for (const [key, value] of Object.entries(json.bin)) {
         // Remove 'dist/' prefix from bin paths since we're already in dist
-        fixedBin[key] = value.replace(/^dist\//, '')
+        // Also ensure the path is relative to the dist directory
+        let fixedPath = value.replace(/^\.\/dist\//, './')
+        if (!fixedPath.startsWith('./')) {
+          fixedPath = './' + fixedPath
+        }
+        fixedBin[key] = fixedPath
       }
     }
 

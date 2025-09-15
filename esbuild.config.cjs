@@ -17,11 +17,11 @@ const commonConfig = {
   format: 'cjs',
   target: 'node18',
   bundle: true,
-  minify: !isDev,
+  minify: false,
   sourcemap: isDev,
   external: [],
   banner: {
-    js: `#!/usr/bin/env node\n// ${packageJson.name} v${packageJson.version}`
+    js: `// ${packageJson.name} v${packageJson.version}`
   },
   define: {
     'process.env.NODE_ENV': isDev ? '"development"' : '"production"'
@@ -30,7 +30,7 @@ const commonConfig = {
   metafile: isAnalyze,
   // Optimize for smaller bundle size
   treeShaking: true,
-  drop: isDev ? [] : ['console', 'debugger'],
+  drop: [],
   // Keep only necessary Node.js built-ins
   conditions: ['node'],
   mainFields: ['main', 'module'],
@@ -40,11 +40,11 @@ const commonConfig = {
 };
 
 const builds = [
-  {
-    entryPoints: ['src/bin-simple.js'],
-    outfile: 'dist/bin-simple.cjs',
-    ...commonConfig
-  },
+      {
+        entryPoints: ['src/bin-simple.cjs'],
+        outfile: 'dist/bin-simple.cjs',
+        ...commonConfig
+      },
   {
     entryPoints: ['src/bin/fopen-handler-simple.js'],
     outfile: 'dist/bin/fopen-handler-simple.cjs',
