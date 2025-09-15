@@ -38,30 +38,27 @@ function saveConfig(config) {
 }
 
 // Commands
-function install() {
+async function install() {
   console.log("Installing file opener protocol...")
   ensureConfigDir()
 
   // Register protocol using protocol-registry
   try {
     const protocolRegistry = require("protocol-registry")
-    const handlerPath = path.join(__dirname, "fopen-handler.cjs")
+    const handlerPath = path.join(__dirname, "bin", "fopen-handler-simple.cjs")
+    const command = `node "${handlerPath}" "$_URL_"`
 
-    protocolRegistry.register({
-      protocol: "fileopener",
-      command: `node "${handlerPath}" "$1"`,
+    console.log(`Registering protocol: "fileopener"`)
+    console.log(`With command: "${command}"`)
+
+    await protocolRegistry.register("fileopener", command, {
       override: true,
-      script: true,
       terminal: false
-    }).then(() => {
-      console.log("Protocol registered successfully")
-      console.log("Configuration directory: " + CONFIG_DIR)
-    }).catch((error) => {
-      console.error("Failed to register protocol:", error.message)
     })
-  } catch (error) {
-    console.log("Protocol registered successfully (manual)")
+    console.log('\nProtocol registration successful!')
     console.log("Configuration directory: " + CONFIG_DIR)
+  } catch (error) {
+    console.error('\nError during protocol registration:', error)
   }
 }
 
@@ -185,6 +182,13 @@ function handleUrl(url) {
       return
     }
 
+    // Handle special case for config
+    if (project === 'config' && !parsedUrl.pathname.replace(/^\/+/, '')) {
+      console.log(`Opening config file: ${CONFIG_FILE}`)
+      openFile(CONFIG_FILE)
+      return
+    }
+
     let filePath
     // Check for legacy query parameter format
     const queryPath = parsedUrl.searchParams.get("path")
@@ -256,7 +260,7 @@ const command = args[0]
 
 switch (command) {
   case "install":
-    install()
+    install().catch(console.error)
     break
   case "add":
     add(args[1], args[2])

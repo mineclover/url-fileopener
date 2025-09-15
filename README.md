@@ -11,6 +11,8 @@ A powerful command-line interface for opening local files via custom URL scheme 
 - 🔄 **Dual URL Formats**: Supports both modern and legacy URL formats
 - ⚙️ **Configuration Management**: Easy project setup and management
 - 🛡️ **Error Handling**: Comprehensive error messages and validation
+- 🎯 **Config URL Support**: Access configuration via `fileopener://config`
+- 🔧 **ES Module Support**: Built with modern JavaScript (ES modules)
 
 ## 🚀 Quick Start
 
@@ -24,55 +26,57 @@ cd url-fileopener
 # Install dependencies
 pnpm install
 
-# Build the CLI
+# Build the CLI (converts ES modules to CommonJS)
 pnpm build
 
-# Install globally (optional)
-pnpm link --global
+# Register the protocol with your system
+node dist/bin-simple.cjs install
 ```
 
 ### Basic Usage
 
 ```bash
-# 1. Register the protocol with your system
-fopen install
+# 1. Add a project alias
+node dist/bin-simple.cjs add myproject /path/to/your/project
 
-# 2. Add a project alias
-fopen add myproject /path/to/your/project
+# 2. Open files using URLs
+node dist/bin-simple.cjs open "fileopener://myproject/src/index.js"
 
-# 3. Open files using URLs
-fopen open "fileopener://myproject/src/index.js"
+# 3. List configured projects
+node dist/bin-simple.cjs list
 
-# 4. List configured projects
-fopen list
+# 4. Open configuration file
+node dist/bin-simple.cjs config
 
-# 5. Open configuration file
-fopen config
+# 5. Open config via URL (alternative)
+node dist/bin-simple.cjs open "fileopener://config"
 ```
 
 ## 📚 Commands Reference
 
-### `fopen install`
+### `node dist/bin-simple.cjs install`
 Registers the `fileopener://` protocol with your operating system and creates the configuration directory.
 
 ```bash
-fopen install
+node dist/bin-simple.cjs install
 ```
 
 **Output:**
 ```
 Installing file opener protocol...
-Configuration directory created
-Protocol registered successfully
+Registering protocol: "fileopener"
+With command: "node "/path/to/dist/bin/fopen-handler-simple.cjs" "$_URL_""
+[SECURITY] Command executed: { ... }
+Protocol registration successful!
 Configuration directory: ~/.fopen-cli
 ```
 
-### `fopen add <project> <path>`
+### `node dist/bin-simple.cjs add <project> <path>`
 Adds a new project alias mapping a name to a local directory path.
 
 ```bash
-fopen add myproject /Users/username/projects/my-project
-fopen add docs /Users/username/documents
+node dist/bin-simple.cjs add myproject /Users/username/projects/my-project
+node dist/bin-simple.cjs add docs /Users/username/documents
 ```
 
 **Validation:**

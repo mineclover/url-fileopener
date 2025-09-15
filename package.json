@@ -2,6 +2,7 @@
   "name": "fopen-cli",
   "version": "1.0.0",
   "packageManager": "pnpm@10.14.0",
+  "type": "module",
   "license": "MIT",
   "description": "CLI tool for opening files via custom URL scheme",
   "bin": {
@@ -17,7 +18,7 @@
     "directory": "dist"
   },
   "scripts": {
-    "build": "pnpm copy-package-json",
+    "build": "mkdir -p dist/bin && cp src/bin-simple.js dist/bin-simple.cjs && cp src/bin/fopen-handler-simple.js dist/bin/fopen-handler-simple.cjs && node scripts/copy-package-json.js",
     "clean": "rimraf dist/*",
     "test": "vitest run",
     "copy-package-json": "node scripts/copy-package-json.js"
