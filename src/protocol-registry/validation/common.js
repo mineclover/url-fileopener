@@ -9,7 +9,7 @@ export const protocolSchema = Joi.string()
 // Security: Enhanced command validation
 const commandSchema = Joi.string()
     .required()
-    .pattern(/^[^<>;`{}[\]\\]*$/) // Block most shell injection characters but allow $ and () for test compatibility
+    .pattern(/^[^<>;`{}[\]]*$/) // Block most shell injection characters, allow backslash and quotes for paths
     .max(1000) // Reasonable length limit
     .custom((value, helpers) => {
         // Additional security checks for dangerous patterns

@@ -438,7 +438,7 @@ Comprehensive error messages for various scenarios:
 Uses `open` command to open files with default applications.
 
 ### Windows
-Uses `start` command to open files with default applications.
+Uses `cmd /c start ""` command to open files with default applications. The empty quotes handle file paths with spaces correctly.
 
 ### Linux
 Uses `xdg-open` command to open files with default applications.

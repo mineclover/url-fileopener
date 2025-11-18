@@ -5,6 +5,33 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+async function copyTemplates() {
+  console.log("[Build] Copying templates ...");
+  const templatesSourceDir = path.join(__dirname, "..", "src", "protocol-registry");
+  const templatesDestDir = path.join(__dirname, "..", "dist");
+
+  // Copy windows templates
+  const windowsTemplatesSrc = path.join(templatesSourceDir, "windows", "templates");
+  const windowsTemplatesDest = path.join(templatesDestDir, "templates");
+
+  try {
+    await fs.mkdir(windowsTemplatesDest, { recursive: true });
+    const files = await fs.readdir(windowsTemplatesSrc);
+
+    for (const file of files) {
+      if (file.endsWith('.ejs')) {
+        const srcPath = path.join(windowsTemplatesSrc, file);
+        const destPath = path.join(windowsTemplatesDest, file);
+        await fs.copyFile(srcPath, destPath);
+        console.log(`  ✓ Copied ${file}`);
+      }
+    }
+  } catch (error) {
+    console.error("Error copying templates:", error);
+    process.exit(1);
+  }
+}
+
 async function copyPackageJson() {
   try {
     console.log("[Build] Copying package.json ...");
@@ -48,6 +75,10 @@ async function copyPackageJson() {
     };
 
     await fs.writeFile(distPath, JSON.stringify(pkg, null, 2));
+
+    // Copy templates
+    await copyTemplates();
+
     console.log("[Build] Build completed.");
   } catch (error) {
     console.error("Error copying package.json:", error);

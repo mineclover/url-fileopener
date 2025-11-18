@@ -63,8 +63,8 @@ function openFile(filePath) {
       args = [filePath];
       break;
     case 'win32': // Windows
-      command = 'start';
-      args = ['', filePath];
+      command = 'cmd';
+      args = ['/c', 'start', '""', filePath];
       break;
     case 'linux': // Linux
       command = 'xdg-open';

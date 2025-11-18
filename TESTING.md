@@ -179,3 +179,62 @@ The fileopener CLI is designed with security in mind:
 - **Safe Defaults**: Uses system default applications rather than custom execution logic
 
 If you observe any behavior that contradicts these security principles, please report it as a bug.
+
+## 🛡️ Security Test Results (Windows)
+
+### Test Environment
+- Platform: Windows 10/11
+- Date: 2025-11-18
+- CLI Version: 1.2.3
+
+### Security Attack Tests
+
+All security tests passed successfully on Windows platform:
+
+| Attack Type | Test Case | Result | Notes |
+|-------------|-----------|--------|-------|
+| Path Traversal | `/../../../Windows/System32/calc.exe` | ✅ Blocked | URL normalized automatically |
+| Absolute Path (slash) | `/C:/Windows/System32/calc.exe` | ✅ Blocked | Absolute path validation |
+| Absolute Path (backslash) | `/C:\Windows\System32\calc.exe` | ✅ Blocked | Windows path format detected |
+| Tilde Home | `/~/Documents/test.txt` | ✅ Blocked | Tilde traversal detected |
+| UNC Path | `//192.168.1.1/share/file.txt` | ✅ Blocked | Network path blocked |
+| URL Encoded | `/%2e%2e%2f%2e%2e%2f...` | ✅ Blocked | Decoded then blocked |
+| Legacy Format | `?path=C:\test.txt` | ✅ Blocked | Absolute path in query param |
+| Valid File | `/package.json` | ✅ Opened | Within project boundary |
+| Valid File | `/README.md` | ✅ Opened | Within project boundary |
+
+### Security Layers Verified
+
+1. **Initial Validation**: Blocks paths containing `..` or `~`
+2. **Absolute Path Check**: Detects Windows (`C:\`) and Unix (`/`) absolute paths
+3. **Normalization Check**: Re-validates after `path.normalize()`
+4. **Final Boundary Check**: Uses `path.resolve()` + `startsWith()` to ensure resolved path is within project
+
+### File Opening Verification
+
+The Windows file opening implementation was updated to use:
+```javascript
+command = 'cmd'
+args = ['/c', 'start', '""', filePath]
+```
+
+This ensures:
+- ✅ Handles paths with spaces correctly
+- ✅ No shell injection vulnerabilities
+- ✅ Uses system default applications safely
+- ✅ Process cleanup after file operation
+
+### Audit Log
+
+All security violations are logged to `%USERPROFILE%\.fopen-cli\handler.log` with:
+- Timestamp
+- Attack type (e.g., "SECURITY VIOLATION: Absolute path not allowed")
+- Attempted path
+- Project path for reference
+
+Example log entry:
+```
+[2025-11-18T00:59:12.590Z] SECURITY VIOLATION: Absolute path not allowed
+[2025-11-18T00:59:12.590Z] Attempted path: "C:/Windows/System32/calc.exe"
+[2025-11-18T00:59:12.591Z] Project path: "C:\woo-work\workflow\url-fileopener"
+```

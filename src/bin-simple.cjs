@@ -56,7 +56,8 @@ async function install() {
 
     await protocolRegistry.register("fileopener", command, {
       override: true,
-      terminal: false
+      terminal: false,
+      appName: "fopen-handler"
     })
     logInfo("Protocol registration successful", {
       "Configuration directory": CONFIG_DIR
@@ -170,8 +171,8 @@ function openFile(filePath) {
       args = [filePath]
       break
     case "win32": // Windows
-      command = "start"
-      args = ["", filePath]
+      command = "cmd"
+      args = ["/c", "start", '""', filePath]
       break
     case "linux": // Linux
       command = "xdg-open"
