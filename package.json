@@ -27,8 +27,8 @@
     "lint": "eslint . --ext .js,.mjs,.cjs",
     "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
     "copy-package-json": "node scripts/copy-package-json.js",
-    "prebuild": "pnpm clean",
-    "prepublishOnly": "pnpm build && pnpm test"
+    "prebuild": "pnpm run clean",
+    "prepublishOnly": "pnpm run build && pnpm run test"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.0",
