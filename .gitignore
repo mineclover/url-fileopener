@@ -3,6 +3,7 @@ coverage/
 node_modules/
 yarn-error.log
 .ultra.cache.json
+.turbo/
 .DS_Store
 tmp/
 build/
