@@ -1,0 +1,7 @@
+# 이 패키지는 자체 pnpm-lock.yaml을 가지므로 상위 data-pipeline 워크스페이스와 분리된 자체 워크스페이스 루트로 취급한다.
+# (pnpm 11은 package.json#pnpm, .npmrc의 pnpm 설정을 읽지 않으므로 pnpm 설정은 이 파일에 둔다.)
+
+allowBuilds:
+  # pnpm 10에서는 허용 목록이 없어 의존성 빌드 스크립트가 실행되지 않았다. 동일 동작 유지(pnpm 11 strictDepBuilds 대응).
+  # esbuild의 postinstall(install.js)은 건너뛰어도 플랫폼 바이너리가 optionalDependencies로 설치되므로 동작에 지장 없음.
+  esbuild: false

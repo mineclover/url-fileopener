@@ -172,8 +172,8 @@ describe("Complete workflow", () => {
 
 ### Prerequisites
 
-- Node.js 18+
-- pnpm package manager
+- Node.js 22.13+ (required by pnpm 11)
+- pnpm 11 (packageManager: pnpm@11.28.6)
 - Vitest testing framework
 
 ### Environment Variables
